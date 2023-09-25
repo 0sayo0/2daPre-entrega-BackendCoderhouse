@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Keyboard",
+    "description": "Esta es una descripción muy básica de la PRIMERA instancia de la clase ProductManager",
+    "price": 400,
+    "thumbnail": "https://www.google.com/imgres?imgurl",
+    "code": "PROD-001",
+    "stock": 20,
+    "id": 1
+  },
+  {
+    "title": "Screen",
+    "description": "Esta es una descripción muy básica de la SEGUNDA instancia de la clase ProductManager",
+    "price": 5500,
+    "thumbnail": "https://www.google.com/imgres?imgurl",
+    "code": "PROD-002",
+    "stock": 7,
+    "id": 2
+  },
+  {
+    "title": "Headsets",
+    "description": "Esta es una descripción muy básica de la SEGUNDA instancia de la clase ProductManager",
+    "price": 2000,
+    "thumbnail": "https://www.google.com/imgres?imgurl",
+    "code": "PROD-003",
+    "stock": 15,
+    "id": 3
+  },
+  {
+    "title": "Mouse",
+    "description": "Esta es una descripción muy básica de la SEGUNDA instancia de la clase ProductManager",
+    "price": 1500,
+    "thumbnail": "https://www.google.com/imgres?imgurl",
+    "code": "PROD-004",
+    "stock": 20,
+    "id": 4
+  }
+]
