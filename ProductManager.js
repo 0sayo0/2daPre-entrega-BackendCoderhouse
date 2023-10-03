@@ -40,13 +40,11 @@ class ProductManager {
         }
     }
 
-    // getProducts() {
-    //     return this.products;
-    // }
+    addProduct(productData) {
+        const { title, description, price, imageUrl, code, stock, category } = productData;
 
-    addProduct(title, description, price, thumbnail, code, stock) {
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
-            console.log(('Todos los campos son obligatorios!!! Solo se mostrará la instancia que contenga todos los campos.').toUpperCase());
+        if (!title || !description || !price || !code || !stock || !category) {
+            console.log(('Todos los campos son obligatorios excepto thumbnails.').toUpperCase());
             return;
         }
 
@@ -59,9 +57,11 @@ class ProductManager {
             title,
             description,
             price,
-            thumbnail,
             code,
-            stock
+            stock,
+            status: true, // Por defecto es true
+            category,
+            thumbnails
         };
 
         if (this.products.length === 0) {
@@ -83,18 +83,6 @@ class ProductManager {
             throw error;
         }
     }
-
-    // getProductById(idProduct) {
-    //     const product = this.products.find(product => product.id === idProduct);
-
-    //     if (!product) {
-    //         console.log('Producto no encontrado!!!');
-    //         return;
-    //     }
-
-    //     console.log(('El producto fue encontrado exitosamente:').toUpperCase());
-    //     console.log(product);
-    // }
 
     updateProduct(id, updatedProduct) {
         const productIndex = this.products.findIndex(product => product.id === id);
@@ -128,43 +116,47 @@ class ProductManager {
     }
 }
 
+function isProductIdValid(id) {
+    return !isNaN(parseInt(id)) && isFinite(id); //Agregado para 1ra pre-entrega
+}
+
 const manager = new ProductManager('productos.json');
 
-manager.addProduct(
-    'Keyboard',
-    'Esta es una descripción muy básica de la PRIMERA instancia de la clase ProductManager',
-    1000,
-    'https://www.google.com/imgres?imgurl',
-    'PROD-001',
-    10
-);
+manager.addProduct({
+    title: 'Keyboard',
+    description: 'Esta es una descripción muy básica de la PRIMERA instancia de la clase ProductManager',
+    price: 1000,
+    imageUrl: 'https://www.google.com/imgres?imgurl',
+    code: 'PROD-001',
+    stock: 10
+});
 
-manager.addProduct(
-    'Screen',
-    'Esta es una descripción muy básica de la SEGUNDA instancia de la clase ProductManager',
-    5500,
-    'https://www.google.com/imgres?imgurl',
-    'PROD-002',
-    7
-);
+manager.addProduct({
+    title: 'Screen',
+    description: 'Esta es una descripción muy básica de la SEGUNDA instancia de la clase ProductManager',
+    price: 5500,
+    imageUrl: 'https://www.google.com/imgres?imgurl',
+    code: 'PROD-002',
+    stock: 7
+});
 
-manager.addProduct(
-    'Headsets',
-    'Esta es una descripción muy básica de la TERCERA instancia de la clase ProductManager',
-    2000,
-    'https://www.google.com/imgres?imgurl',
-    'PROD-003',
-    15
-);
+manager.addProduct({
+    title: 'Headsets',
+    description: 'Esta es una descripción muy básica de la TERCERA instancia de la clase ProductManager',
+    price: 2000,
+    imageUrl: 'https://www.google.com/imgres?imgurl',
+    code: 'PROD-003',
+    stock: 15
+});
 
-manager.addProduct(
-    'Mouse',
-    'Esta es una descripción muy básica de la CUARTA instancia de la clase ProductManager',
-    1500,
-    'https://www.google.com/imgres?imgurl',
-    'PROD-004',
-    20
-);
+manager.addProduct({
+    title: 'Mouse',
+    description: 'Esta es una descripción muy básica de la CUARTA instancia de la clase ProductManager',
+    price: 1500,
+    imageUrl: 'https://www.google.com/imgres?imgurl',
+    code: 'PROD-004',
+    stock: 20
+});
 
 manager.getProductById(3);
 
@@ -180,4 +172,7 @@ manager.deleteProduct(); //Introduce el numero de un id existente para que sea e
 console.log(manager.getProducts());
 
 
-module.exports = ProductManager;
+module.exports = {
+    ProductManager,
+    isProductIdValid
+};
