@@ -20,7 +20,7 @@ class CartManager {
 
     createCart() {
         const newCart = {
-            id: this.carts.length + 1, // Esto es un simple autogenerador.
+            id: this.carts.length + 1,
             products: []
         };
 
@@ -37,7 +37,7 @@ class CartManager {
     
         const productInCart = cart.products.find(p => p.product === productId);
         if (productInCart) {
-            productInCart.quantity += 1; // Incrementa la cantidad si el producto ya existe
+            productInCart.quantity += 1;
         } else {
             cart.products.push({ product: productId, quantity: 1 }); // Agrega un nuevo producto si no existe
         }

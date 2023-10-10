@@ -1,13 +1,24 @@
 //-----------------------------------------------------------------------------------------
-/** Jonathan Morales Comision: 55575 - 3er Entregable programacion Backend Coderhouse */
+/** Jonathan Morales Comision: 55575 - 4to Entregable programacion Backend Coderhouse */
 //-----------------------------------------------------------------------------------------
 
 const express = require('express');
 const { ProductManager, isProductIdValid } = require('./ProductManager');
 const { CartManager, isCartIdValid } = require('./CartManager');
 
+const exphbs = require('express-handlebars');
+const http = require('http');
+const socketIo = require('socket.io');
+
 const app = express();
-const port = process.env.PORT || 8080; // Puerto en el que se ejecutará el servidor
+// const port = process.env.PORT || 8080; // Puerto en el que se ejecutará el servidor
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// Configuración de Handlebars
+app.engine('handlebars', exphbs());
+app.set('view engine', 'handlebars');
+app.use(express.static('public'));
 
 const productManager = new ProductManager('productos.json');
 const cartManager = new CartManager('carrito.json');
@@ -58,6 +69,7 @@ productRouter.post('/', async (req, res) => {
   try {
     const productData = req.body;
     productManager.addProduct(productData);
+    io.emit('product-updated');
     res.status(201).json({ message: 'Producto agregado exitosamente.' });
   } catch (error) {
     console.error(error);
@@ -70,7 +82,7 @@ productRouter.put('/:pid', async (req, res) => {
   if (isProductIdValid(productId)) {
       try {
           const updatedProduct = req.body;
-          if (updatedProduct.id) { // Si el body contiene un ID, lo eliminamos para asegurarnos de no modificarlo.
+          if (updatedProduct.id) {
               delete updatedProduct.id;
           }
           productManager.updateProduct(productId, updatedProduct);
@@ -89,6 +101,7 @@ productRouter.delete('/:pid', async (req, res) => {
   if (isProductIdValid(productId)) {
       try {
           productManager.deleteProduct(productId);
+          io.emit('product-updated');
           res.json({ message: 'Producto eliminado exitosamente.' });
       } catch (error) {
           console.error(error);
@@ -164,7 +177,55 @@ cartRouter.post('/:cartId/product/:pid', (req, res) => {
   }
 });
 
+// Nueva ruta para la vista home.handlebars
+productRouter.get('/home', async (req, res) => {
+  try {
+    const products = await productManager.getProducts();
+    res.render('home', { products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener productos' });
+  }
+});
 
-app.listen(port, () => {
+// Configuración de Socket.io
+io.on('connection', (socket) => {
+  console.log('Usuario conectado con socket.io', socket.id);
+
+  socket.on('add-product', (productData) => {
+      try {
+          productManager.addProduct(productData);
+          io.emit('product-updated');
+      } catch (error) {
+          console.error("Error adding product:", error);
+          socket.emit('error', 'Error al agregar el producto');
+      }
+  });
+
+  socket.on('delete-product', (productId) => {
+      try {
+          productManager.deleteProduct(productId);
+          io.emit('product-updated');
+      } catch (error) {
+          console.error("Error deleting product:", error);
+          socket.emit('error', 'Error al eliminar el producto');
+      }
+  });
+
+  socket.on('disconnect', () => {
+      console.log('Usuario desconectado', socket.id);
+  });
+});
+
+productRouter.get('/realtimeproducts', (req, res) => {
+  res.render('realTimeProducts');
+});
+
+server.listen(port, () => {
   console.log(`Servidor Express en ejecución en el puerto ${port}`);
 });
+
+
+// app.listen(port, () => {
+//   console.log(`Servidor Express en ejecución en el puerto ${port}`);
+// });
