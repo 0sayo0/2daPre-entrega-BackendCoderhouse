@@ -59,3 +59,63 @@ module.exports = {
     CartManager,
     isCartIdValid
 };
+
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+//Codigo DB (Aun falta por separar)
+
+const mongoose = require('mongoose');
+const Cart = require('./CartsModel');
+
+class CartManager {
+    async createCart() {
+        try {
+            const newCart = new Cart();
+            await newCart.save();
+            console.log('Carrito creado exitosamente:', newCart);
+            return newCart;
+        } catch (error) {
+            console.error('Error al crear el carrito:', error);
+        }
+    }
+
+    async addProductToCart(cartId, productId) {
+        try {
+            const cart = await Cart.findById(cartId);
+            if (!cart) {
+                throw new Error('Carrito no encontrado.');
+            }
+
+            const productIndex = cart.products.findIndex(p => p.productId.equals(productId));
+            if (productIndex !== -1) {
+                cart.products[productIndex].quantity += 1;
+            } else {
+                cart.products.push({ productId, quantity: 1 });
+            }
+
+            await cart.save();
+            console.log('Producto agregado al carrito exitosamente.');
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+        }
+    }
+
+    async getCartById(cartId) {
+        try {
+            const cart = await Cart.findById(cartId).populate('products.productId');
+            return cart;
+        } catch (error) {
+            console.error('Error al obtener el carrito:', error);
+        }
+    }
+}
+
+function isCartIdValid(id) {
+    return mongoose.Types.ObjectId.isValid(id);
+}
+
+module.exports = {
+    CartManager,
+    isCartIdValid
+};

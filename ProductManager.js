@@ -176,3 +176,68 @@ module.exports = {
     ProductManager,
     isProductIdValid
 };
+
+//-----------------------------------------------------------------------------------------------------------
+
+
+//Codigo DB (Aun falta por separar)
+
+const mongoose = require('mongoose');
+const Product = require('./ProductsModel');
+
+class ProductManager {
+    async addProduct(productData) {
+        try {
+            const product = new Product(productData);
+            await product.save();
+            console.log('Producto agregado exitosamente:', product);
+        } catch (error) {
+            console.error('Error al agregar el producto:', error);
+        }
+    }
+
+    async getProducts(limit) {
+        try {
+            const products = await Product.find().limit(limit);
+            return products;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getProductById(idProduct) {
+        try {
+            const product = await Product.findById(idProduct);
+            return product;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async updateProduct(id, updatedProduct) {
+        try {
+            await Product.findByIdAndUpdate(id, updatedProduct);
+            console.log('Producto actualizado exitosamente.');
+        } catch (error) {
+            console.error('Error al actualizar el producto:', error);
+        }
+    }
+
+    async deleteProduct(id) {
+        try {
+            await Product.findByIdAndDelete(id);
+            console.log('Producto eliminado exitosamente.');
+        } catch (error) {
+            console.error('Error al eliminar el producto:', error);
+        }
+    }
+}
+
+function isProductIdValid(id) {
+    return mongoose.Types.ObjectId.isValid(id);
+}
+
+module.exports = {
+    ProductManager,
+    isProductIdValid
+};

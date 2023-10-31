@@ -9,6 +9,7 @@ const { CartManager, isCartIdValid } = require('./CartManager');
 const exphbs = require('express-handlebars');
 const http = require('http');
 const socketIo = require('socket.io');
+const db = require('./db');
 
 const app = express();
 // const port = process.env.PORT || 8080; // Puerto en el que se ejecutará el servidor
@@ -31,6 +32,8 @@ const cartRouter = express.Router();
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter);
 // app.use('/carts', cartRouter);
+
+db.connect();
 
 // Ruta para obtener todos los productos (con límite opcional)
 productRouter.get('/', async (req, res) => {
