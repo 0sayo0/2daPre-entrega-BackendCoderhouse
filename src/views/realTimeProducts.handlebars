@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos en Tiempo Real</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        socket.on('product-updated', function() {
+            location.reload(); //Recargamos pagina
+        });
+    </script>
+</head>
+<body>
+    <h1>Productos en Tiempo Real</h1>
+
+    <form id="addProductForm">
+        <input type="text" placeholder="Title" id="title">
+        <input type="text" placeholder="Description" id="description">
+        <input type="number" placeholder="Price" id="price">
+        <input type="text" placeholder="Code" id="code">
+        <input type="number" placeholder="Stock" id="stock">
+        <button type="button" onclick="addProduct()">Add Product</button>
+    </form>
+
+    <form id="deleteProductForm">
+        <input type="number" placeholder="Product ID to delete" id="deleteId">
+        <button type="button" onclick="deleteProduct()">Delete Product</button>
+    </form>
+
+    <ul id="products-list">
+        {{#each products}}
+            <li>
+                <strong>{{this.title}}</strong>: {{this.description}} - {{this.price}}
+            </li>
+        {{/each}}
+    </ul>
+
+    <script>
+        function addProduct() {
+            const product = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                price: parseFloat(document.getElementById('price').value),
+                code: document.getElementById('code').value,
+                stock: parseInt(document.getElementById('stock').value)
+            };
+            socket.emit('add-product', product);
+        }
+
+        function deleteProduct() {
+            const productId = parseInt(document.getElementById('deleteId').value);
+            socket.emit('delete-product', productId);
+        }
+    </script>
+</body>
+</html>
